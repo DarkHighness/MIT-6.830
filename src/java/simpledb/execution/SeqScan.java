@@ -31,17 +31,14 @@ public class SeqScan implements OpIterator {
      * Creates a sequential scan over the specified table as a part of the
      * specified transaction.
      *
-     * @param tid
-     *            The transaction this scan is running as a part of.
-     * @param tableid
-     *            the table to scan.
-     * @param tableAlias
-     *            the alias of this table (needed by the parser); the returned
-     *            tupleDesc should have fields with name tableAlias.fieldName
-     *            (note: this class is not responsible for handling a case where
-     *            tableAlias or fieldName are null. It shouldn't crash if they
-     *            are, but the resulting name can be null.fieldName,
-     *            tableAlias.null, or null.null).
+     * @param tid        The transaction this scan is running as a part of.
+     * @param tableid    the table to scan.
+     * @param tableAlias the alias of this table (needed by the parser); the returned
+     *                   tupleDesc should have fields with name tableAlias.fieldName
+     *                   (note: this class is not responsible for handling a case where
+     *                   tableAlias or fieldName are null. It shouldn't crash if they
+     *                   are, but the resulting name can be null.fieldName,
+     *                   tableAlias.null, or null.null).
      */
     public SeqScan(TransactionId tid, int tableid, String tableAlias) {
         this.transactionId = tid;
@@ -50,33 +47,30 @@ public class SeqScan implements OpIterator {
     }
 
     /**
-     * @return
-     *       return the table name of the table the operator scans. This should
-     *       be the actual name of the table in the catalog of the database
-     * */
+     * @return return the table name of the table the operator scans. This should
+     * be the actual name of the table in the catalog of the database
+     */
     public String getTableName() {
         return Database.getCatalog().getTableName(tableId);
     }
 
     /**
      * @return Return the alias of the table this operator scans.
-     * */
-    public String getAlias()
-    {
+     */
+    public String getAlias() {
         return tableAlias;
     }
 
     /**
      * Reset the tableid, and tableAlias of this operator.
-     * @param tableid
-     *            the table to scan.
-     * @param tableAlias
-     *            the alias of this table (needed by the parser); the returned
-     *            tupleDesc should have fields with name tableAlias.fieldName
-     *            (note: this class is not responsible for handling a case where
-     *            tableAlias or fieldName are null. It shouldn't crash if they
-     *            are, but the resulting name can be null.fieldName,
-     *            tableAlias.null, or null.null).
+     *
+     * @param tableid    the table to scan.
+     * @param tableAlias the alias of this table (needed by the parser); the returned
+     *                   tupleDesc should have fields with name tableAlias.fieldName
+     *                   (note: this class is not responsible for handling a case where
+     *                   tableAlias or fieldName are null. It shouldn't crash if they
+     *                   are, but the resulting name can be null.fieldName,
+     *                   tableAlias.null, or null.null).
      */
     public void reset(int tableid, String tableAlias) {
         this.tableId = tableid;
@@ -101,7 +95,7 @@ public class SeqScan implements OpIterator {
      * (e.g., "alias.fieldName").
      *
      * @return the TupleDesc with field names from the underlying HeapFile,
-     *         prefixed with the tableAlias string from the constructor.
+     * prefixed with the tableAlias string from the constructor.
      */
     public TupleDesc getTupleDesc() {
         final TupleDesc desc = Database.getCatalog().getTupleDesc(tableId);
@@ -135,6 +129,6 @@ public class SeqScan implements OpIterator {
 
     public void rewind() throws DbException, NoSuchElementException,
             TransactionAbortedException {
-       dbFileIterator.rewind();
+        dbFileIterator.rewind();
     }
 }

@@ -67,7 +67,7 @@ public class BufferPool {
         this.freq = new LinkedList<>();
         this.slots = new PageSlot[numPages];
 
-        for(int i = 0; i < numPages; i++) {
+        for (int i = 0; i < numPages; i++) {
             this.slots[i] = new PageSlot();
             this.emptySlots.add(i);
         }

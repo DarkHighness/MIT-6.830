@@ -1,4 +1,5 @@
 package simpledb.storage;
+
 import simpledb.common.Database;
 import simpledb.common.DbException;
 import simpledb.common.Permissions;
@@ -35,10 +36,10 @@ public class HeapFileDbIterator implements DbFileIterator {
             return false;
 
         while (true) {
-            if(pageIterator.hasNext())
+            if (pageIterator.hasNext())
                 return true;
 
-            pageCursor ++;
+            pageCursor++;
             if (pageCursor >= heapFile.numPages()) {
                 pageIterator = null;
                 return false;

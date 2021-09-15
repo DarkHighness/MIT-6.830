@@ -1,4 +1,5 @@
 package simpledb;
+
 import simpledb.common.DbException;
 import simpledb.common.Type;
 import simpledb.common.Utility;
@@ -9,7 +10,7 @@ import simpledb.transaction.TransactionId;
 import java.io.*;
 
 public class SimpleDb {
-    public static void main (String[] args)
+    public static void main(String[] args)
             throws DbException, TransactionAbortedException {
         // convert a file
         switch (args[0]) {

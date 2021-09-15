@@ -16,18 +16,18 @@ public interface Aggregator extends Serializable {
      * SUM_COUNT and SC_AVG will
      * only be used in lab7, you are not required
      * to implement them until then.
-     * */
+     */
     enum Op implements Serializable {
         MIN, MAX, SUM, AVG, COUNT,
         /**
          * SUM_COUNT: compute sum and count simultaneously, will be
          * needed to compute distributed avg in lab7.
-         * */
+         */
         SUM_COUNT,
         /**
          * SC_AVG: compute the avg of a set of SUM_COUNT tuples,
          * will be used to compute distributed avg in lab7.
-         * */
+         */
         SC_AVG;
 
         /**
@@ -49,24 +49,23 @@ public interface Aggregator extends Serializable {
         public static Op getOp(int i) {
             return values()[i];
         }
-        
-        public String toString()
-        {
-        	if (this==MIN)
-        		return "min";
-        	if (this==MAX)
-        		return "max";
-        	if (this==SUM)
-        		return "sum";
-        	if (this==SUM_COUNT)
-    			return "sum_count";
-        	if (this==AVG)
-        		return "avg";
-        	if (this==COUNT)
-        		return "count";
-        	if (this==SC_AVG)
-    			return "sc_avg";
-        	throw new IllegalStateException("impossible to reach here");
+
+        public String toString() {
+            if (this == MIN)
+                return "min";
+            if (this == MAX)
+                return "max";
+            if (this == SUM)
+                return "sum";
+            if (this == SUM_COUNT)
+                return "sum_count";
+            if (this == AVG)
+                return "avg";
+            if (this == COUNT)
+                return "count";
+            if (this == SC_AVG)
+                return "sc_avg";
+            throw new IllegalStateException("impossible to reach here");
         }
     }
 
@@ -81,8 +80,9 @@ public interface Aggregator extends Serializable {
 
     /**
      * Create a OpIterator over group aggregate results.
+     *
      * @see TupleIterator for a possible helper
      */
     OpIterator iterator();
-    
+
 }
