@@ -1,14 +1,27 @@
 package simpledb.execution;
 
 import simpledb.common.Type;
-import simpledb.storage.Tuple;
+import simpledb.storage.*;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Knows how to compute some aggregate over a set of IntFields.
  */
 public class IntegerAggregator implements Aggregator {
-
     private static final long serialVersionUID = 1L;
+
+    private static final Field NO_GROUPING_FIELD = new IntField(-1);
+
+    private final int groupField;
+    private final Type groupFieldType;
+    private final int aggragateField;
+    private final Op what;
+    private final TupleDesc tupleDesc;
+    private final Map<Field, InternalResult> results;
 
     /**
      * Aggregate constructor
@@ -22,7 +35,16 @@ public class IntegerAggregator implements Aggregator {
      */
 
     public IntegerAggregator(int gbfield, Type gbfieldtype, int afield, Op what) {
-        // some code goes here
+        this.groupField = gbfield;
+        this.groupFieldType = gbfieldtype;
+        this.aggragateField = afield;
+        this.what = what;
+        this.results = new LinkedHashMap<>();
+
+        if (gbfield == NO_GROUPING)
+            this.tupleDesc = new TupleDesc(new Type[]{Type.INT_TYPE});
+        else
+            this.tupleDesc = new TupleDesc(new Type[]{gbfieldtype, Type.INT_TYPE});
     }
 
     /**
@@ -32,7 +54,17 @@ public class IntegerAggregator implements Aggregator {
      * @param tup the Tuple containing an aggregate field and a group-by field
      */
     public void mergeTupleIntoGroup(Tuple tup) {
-        // some code goes here
+        Field keyField;
+
+        if (groupField != NO_GROUPING)
+            keyField = tup.getField(groupField);
+        else
+            keyField = NO_GROUPING_FIELD;
+
+        int newVal = ((IntField) tup.getField(aggragateField)).getValue();
+
+        results.computeIfAbsent(keyField, k -> new InternalResult(what))
+                .merge(newVal);
     }
 
     /**
@@ -44,9 +76,63 @@ public class IntegerAggregator implements Aggregator {
      * the constructor.
      */
     public OpIterator iterator() {
-        // some code goes here
-        throw new
-                UnsupportedOperationException("please implement me for lab2");
+        List<Tuple> tupleList = new ArrayList<>(results.size());
+
+        for(Map.Entry<Field, InternalResult> entry : results.entrySet()) {
+            Tuple tuple = new Tuple(tupleDesc);
+
+            if (groupField == NO_GROUPING) {
+                tuple.setField(0, new IntField(entry.getValue().getResult()));
+            } else {
+                tuple.setField(0, entry.getKey());
+                tuple.setField(1, new IntField(entry.getValue().getResult()));
+            }
+
+            tupleList.add(tuple);
+        }
+
+        return new TupleIterator(tupleDesc, tupleList);
     }
 
+    private static class InternalResult {
+        private int count;
+        private float result;
+        private final Op op;
+
+        private InternalResult(Op op) {
+            this.op = op;
+        }
+
+        public void merge(int newVal) {
+            if (count == 0) {
+                result = newVal;
+                count = 1;
+                return;
+            }
+
+            switch (op) {
+                case MIN:
+                    result = Math.min(result, newVal);
+                    break;
+                case MAX:
+                    result = Math.max(result, newVal);
+                    break;
+                case SUM:
+                    result += newVal;
+                    break;
+                case AVG:
+                    result = ((result * count) + newVal) / (count + 1);
+                    break;
+            }
+
+            count++;
+        }
+
+        public int getResult() {
+            if (op == Op.COUNT)
+                return count;
+
+            return (int) result;
+        }
+    }
 }
